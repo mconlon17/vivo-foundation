@@ -3,6 +3,8 @@
 
     See CHANGELOG for a running account of the changes to vivofoundation
 """
+# TODO PEP-8 improvements throughout
+# TODO Repair reference errors
 
 __author__ = "Michael Conlon"
 __copyright__ = "Copyright 2014, University of Florida"
@@ -21,6 +23,7 @@ import string
 from datetime import datetime
 import time
 import csv
+import tempita
 
 
 class UnknownDateTimePrecision(Exception):
@@ -35,8 +38,9 @@ def comma_space(s):
     """
     insert a space after every comma in s unless s ends in a comma
     """
+    # TODO write test function
     k = s.find(',')
-    if k > -1 and k < len(s) - 1 and s[k+1] != " ":
+    if -1 < k < len(s) - 1 and s[k+1] != " ":
         s = s[0:k] + ', ' + comma_space(s[k+1:])
     return s
 
@@ -57,13 +61,14 @@ def make_datetime_rdf(value, title):
         <ufVivo:dateHarvested>{{harvest_datetime}}</ufVivo:dateHarvested>
     </rdf:Description>
     """)
-    uri = vivotools.get_vivo_uri()
+    uri = get_vivo_uri()
     pub_datetime = make_pub_datetime(value)
-    harvest_datetime = vivotools.make_harvest_datetime()
+    harvest_datetime = make_harvest_datetime()
     rdf = "<!-- Timestamp RDF for " + title + "-->"
     rdf = rdf + datetime_template.substitute(uri=uri,\
         pub_datetime=pub_datetime, harvest_datetime=harvest_datetime)
     return [rdf, uri]
+
 
 def add_dtv(dtv):
     """
@@ -74,6 +79,7 @@ def add_dtv(dtv):
     datetime_precision  text string in tag format of VIVO date time precision,
                         example 'vivo:yearMonthDayPrecision'
     """
+    # TODO write test function
     ardf = ""
     if 'date_time' not in dtv or 'datetime_precision' not in dtv or \
        dtv['date_time'] is None:
@@ -89,6 +95,7 @@ def add_dtv(dtv):
             'vivo:dateTimePrecision', untag_predicate(dtv['datetime_precision']))
         return [ardf, dtv_uri]
 
+
 def add_dti(dti):
     """
     Given date time interval attributes, return rdf to create the date time
@@ -99,6 +106,7 @@ def add_dti(dti):
 
     Assumes yearMonthDayPrecision for start and end
     """
+    # TODO write test function
     ardf = ""
         
     dtv = {'date_time' : dti.get('start',None),
@@ -123,6 +131,7 @@ def add_dti(dti):
                     'rdf:end', end_uri)
         return [ardf, dti_uri]
 
+
 def update_entity(vivo_entity, source_entity, key_table):
     """
     Given a VIVO entity and a source entity, go through the elements
@@ -142,6 +151,7 @@ def update_entity(vivo_entity, source_entity, key_table):
     to VIVO.  If key is found in the source entity, and the value is None
     or an empty list, the corresponding change is made to VIVO.
     """
+    # TODO write test function
     entity_uri = vivo_entity['uri']
     ardf = ""
     srdf = ""
@@ -211,6 +221,7 @@ def update_entity(vivo_entity, source_entity, key_table):
             raise ActionError(action)
     return [ardf, srdf]
 
+
 def assert_data_property(uri, data_property, value):
     """
     Given a uri, a data_property name, and a value, generate rdf to assert
@@ -239,6 +250,7 @@ def assert_data_property(uri, data_property, value):
     rdf = rdf + '\n    </rdf:Description>\n'
     return rdf
 
+
 def assert_resource_property(uri, resource_property, resource_uri):
     """
     Given a uri and a resource_property name, and a uri of the resource,
@@ -259,6 +271,7 @@ def assert_resource_property(uri, resource_property, resource_uri):
     rdf = resource_property_template.substitute(uri=uri, \
         resource_property=resource_property, resource_uri=resource_uri)
     return rdf
+
 
 def update_data_property(uri, data_property, vivo_value, source_value):
     """
@@ -305,6 +318,7 @@ def update_data_property(uri, data_property, vivo_value, source_value):
             ardf = assert_data_property(uri, data_property, source_value)
     return [ardf, srdf]
 
+
 def update_resource_property(uri, resource_property, vivo_value, source_value):
     """
     Given the URI of an entity, the name of a resource_proprty, the current
@@ -331,6 +345,7 @@ def update_resource_property(uri, resource_property, vivo_value, source_value):
         srdf = assert_resource_property(uri, resource_property, vivo_value)
         ardf = assert_resource_property(uri, resource_property, source_value)
     return [ardf, srdf]
+
 
 def tag_predicate(p):
     """
@@ -375,6 +390,7 @@ def tag_predicate(p):
             return newp
     return None
 
+
 def untag_predicate(p):
     """
     Given a tagged predicate, return a full predicate.
@@ -418,6 +434,7 @@ def untag_predicate(p):
         return predicate
     else:
         return None
+
 
 def merge_uri(from_uri, to_uri):
     """
@@ -473,6 +490,7 @@ def merge_uri(from_uri, to_uri):
 
     return [ardf, srdf]
 
+
 def remove_uri(uri):
     """
     Given a URI, generate subtraction URI to remove all triples containing
@@ -526,10 +544,12 @@ class UnicodeCsvReader(object):
     def line_num(self):
         return self.csv_reader.line_num
 
+
 class UnicodeDictReader(csv.DictReader):
     def __init__(self, f, encoding="utf-8", fieldnames=None, **kwds):
         csv.DictReader.__init__(self, f, fieldnames=fieldnames, **kwds)
         self.reader = UnicodeCsvReader(f, encoding=encoding, **kwds)
+
 
 def read_csv(filename, skip=True):
     """
@@ -626,6 +646,7 @@ def rdf_header():
 """
     return rdf_header
 
+
 def rdf_footer():
     """
     Return a text string suitable for ending an RDF statement to add or
@@ -635,6 +656,7 @@ def rdf_footer():
 </rdf:RDF>
 """
     return rdf_footer
+
 
 def make_rdf_uri(uri):
     """
@@ -646,6 +668,7 @@ def make_rdf_uri(uri):
     rdf_uri = uri + "/" + word + ".rdf"
     return rdf_uri
 
+
 def key_string(s):
     """
     Given a string s, return a string with a bunch of punctuation and special
@@ -654,9 +677,10 @@ def key_string(s):
     considered in the match
     """
     k = s.encode("utf-8", "ignore").translate(None,
-        """ \t\n\r\f!@#$%^&*()_+:"<>?-=[]\\;',./""")
+                                              """ \t\n\r\f!@#$%^&*()_+:"<>?-=[]\\;',./""")
     k = k.lower()
     return k
+
 
 def get_triples(uri):
     """
@@ -670,6 +694,7 @@ def get_triples(uri):
     query = query.replace("{{uri}}", uri)
     result = vivo_sparql_query(query)
     return result
+
 
 def get_types(uri):
     """
@@ -685,6 +710,7 @@ def get_types(uri):
             if p == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
                 types.append(o)
     return types
+
 
 def get_references(uri):
     """
@@ -761,7 +787,7 @@ def get_value(uri, predicate):
         b = result["results"]["bindings"][0]
         o = b['o']
         return o
-    except:
+    except KeyError:
         return None
 
 
@@ -793,7 +819,7 @@ def find_vivo_uri(predicate, value):
         b = result["results"]["bindings"][0]
         uri = b['uri']['value']
         return uri
-    except:
+    except KeyError:
         return None
 
 
@@ -803,7 +829,7 @@ def show_triples(triples):
     """
     try:
         count = len(triples["results"]["bindings"])
-    except:
+    except KeyError:
         count = 0
     #
     i = 0
@@ -829,7 +855,7 @@ def get_organization(organization_uri):
     triples = get_triples(organization_uri)
     try:
         count = len(triples["results"]["bindings"])
-    except:
+    except KeyError:
         count = 0
     i = 0
     while i < count:
@@ -858,7 +884,7 @@ def get_degree(degree_uri):
     triples = get_triples(degree_uri)
     try:
         count = len(triples["results"]["bindings"])
-    except:
+    except KeyError:
         count = 0
     i = 0
     while i < count:
@@ -894,6 +920,7 @@ def get_degree(degree_uri):
         i = i + 1
     return degree
 
+
 def get_role(role_uri):
     """
     Given a URI, return an object that contains the role it represents
@@ -905,7 +932,7 @@ def get_role(role_uri):
     triples = get_triples(role_uri)
     try:
         count = len(triples["results"]["bindings"])
-    except:
+    except KeyError:
         count = 0
     i = 0
     while i < count:
@@ -937,7 +964,7 @@ def get_webpage(webpage_uri):
     triples = get_triples(webpage_uri)
     try:
         count = len(triples["results"]["bindings"])
-    except:
+    except KeyError:
         count = 0
     i = 0
     while i < count:
@@ -984,6 +1011,7 @@ def get_datetime_value(datetime_value_uri):
                 datetime_value['datetime_precision'] = tag_predicate(o)
     return datetime_value
 
+
 def get_datetime_interval(datetime_interval_uri):
     """
     Given a URI, return an object that contains the datetime_interval it
@@ -993,7 +1021,7 @@ def get_datetime_interval(datetime_interval_uri):
     triples = get_triples(datetime_interval_uri)
     try:
         count = len(triples["results"]["bindings"])
-    except:
+    except KeyError:
         count = 0
     i = 0
     while i < count:
@@ -1027,7 +1055,7 @@ def make_concept_dictionary(debug=False):
     result = vivo_sparql_query(query)
     try:
         count = len(result["results"]["bindings"])
-    except:
+    except KeyError:
         count = 0
     if debug:
         print query, count, result["results"]["bindings"][0], \
@@ -1040,6 +1068,7 @@ def make_concept_dictionary(debug=False):
         concept_dictionary[label] = uri
         i = i + 1
     return concept_dictionary
+
 
 def make_concept_rdf(label):
     """
@@ -1057,6 +1086,7 @@ def make_concept_rdf(label):
         label=label)
     return [rdf, concept_uri]
 
+
 def make_deptid_dictionary(debug=False):
     """
     Make a dictionary for orgs in UF VIVO.  Key is DeptID.  Value is URI.
@@ -1070,7 +1100,7 @@ def make_deptid_dictionary(debug=False):
     result = vivo_sparql_query(query)
     try:
         count = len(result["results"]["bindings"])
-    except:
+    except KeyError:
         count = 0
     if debug:
         print query, count, result["results"]["bindings"][0], \
@@ -1086,6 +1116,7 @@ def make_deptid_dictionary(debug=False):
         i = i + 1
     return deptid_dictionary
 
+
 def find_deptid(deptid, deptid_dictionary):
     """
     Given a deptid, find the org with that deptid.  Return True and URI
@@ -1094,10 +1125,11 @@ def find_deptid(deptid, deptid_dictionary):
     try:
         uri = deptid_dictionary[deptid]
         found = True
-    except:
+    except KeyError:
         uri = None
         found = False
     return [found, uri]
+
 
 def make_date_dictionary(datetime_precision="vivo:yearMonthDayPrecision",
                               debug=False):
@@ -1116,7 +1148,7 @@ def make_date_dictionary(datetime_precision="vivo:yearMonthDayPrecision",
     result = vivo_sparql_query(query)
     try:
         count = len(result["results"]["bindings"])
-    except:
+    except KeyError:
         count = 0
     if debug:
         print query, count, result["results"]["bindings"][0], \
@@ -1139,11 +1171,13 @@ def make_date_dictionary(datetime_precision="vivo:yearMonthDayPrecision",
         i = i + 1
     return date_dictionary
 
+
 def make_datetime_interval_dictionary(debug=False):
     """
     Make a dictionary for datetime intervals in UF VIVO.
     Key is concatenation of start and end uris.  Value is URI.
     """
+    # TODO write test function
     query = tempita.Template("""
     SELECT ?uri ?starturi ?enduri
     WHERE
@@ -1153,10 +1187,10 @@ def make_datetime_interval_dictionary(debug=False):
     }
     """)
     query = query.substitute()
-    result = vt.vivo_sparql_query(query)
+    result = vivo_sparql_query(query)
     try:
         count = len(result["results"]["bindings"])
-    except:
+    except KeyError:
         count = 0
     if debug:
         print query, count, result["results"]["bindings"][0], \
@@ -1180,12 +1214,14 @@ def make_datetime_interval_dictionary(debug=False):
         i = i + 1
     return datetime_interval_dictionary
 
+
 def find_datetime_interval(start_uri, end_uri, datetime_dictionary):
     """
     Given start and end uris for dates, find an interval with that pair of
     dates, find the org with that sponsor.  Return True and URI
     Return false and None if not found
     """
+    # TODO write test function
     if start_uri == None or start_uri == "":
         start_key = "None"
     else:
@@ -1199,10 +1235,11 @@ def find_datetime_interval(start_uri, end_uri, datetime_dictionary):
     try:
         uri = datetime_interval_dictionary[start_key+end_key]
         found = True
-    except:
+    except KeyError:
         uri = None
         found = False
     return [found, uri]
+
 
 def make_webpage_rdf(full_text_uri, \
     uri_type="http://vivo.ufl.edu/ontology/vivo-ufl/FullTextURL", \
@@ -1237,6 +1274,7 @@ def make_webpage_rdf(full_text_uri, \
         harvest_datetime=harvest_datetime)
     return [rdf, webpage_uri]
 
+
 def get_vivo_uri():
     """
     Find an unused VIVO URI with the specified VIVO_URI_PREFIX
@@ -1248,13 +1286,14 @@ def get_vivo_uri():
 	}"""
     response = vivo_sparql_query(query)
     while int(response["results"]["bindings"][0]['.1']['value']) != 0:
-        test_uri = prefix + str(random.randint(1, 9999999999))
+        test_uri = VIVO_URI_PREFIX + str(random.randint(1, 9999999999))
         query = """
             SELECT COUNT(?z) WHERE {
             <""" + test_uri + """> ?y ?z
             }"""
         response = vivo_sparql_query(query)
     return test_uri
+
 
 def vivo_sparql_query(query,
     baseURL=VIVO_QUERY_URI,
@@ -1311,7 +1350,7 @@ def vivo_sparql_query(query,
         try:
             response = urllib.urlopen(baseURL, querypart).read()
             break
-        except:
+        except KeyError:
             count = count + 1
             if count > retries:
                 break
@@ -1322,6 +1361,5 @@ def vivo_sparql_query(query,
             time.sleep(sleep_seconds) # increase the wait time with each retry
     try:
         return json.loads(response)
-    except:
+    except KeyError:
         return None
-
