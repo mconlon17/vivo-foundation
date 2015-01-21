@@ -9,11 +9,11 @@ See the test scripts for examples of use.
 
 ### Version 2.0
 
-Version 2.0 will continue to support VIVO 1.5 ontology.  We expect to 
-complete VIVO Tools 2.0 by March 2015.  
+Version 2.0 will support VIVO 1.6 and VIVO-ISF. We expect to 
+complete VIVO Tools 2.0 by September 2015.  
 
 Additionally,
-VIVO Tools 2.0 will have modules and a setup.py.  We tried hard
+VIVO Tools 2.0 will have modules and a setup.py.  We tried
 to keep everything very simple -- one file, no install procedure,
 one import statement -- but best practice is to organize the
 code into smaller modules and use only the modules one needs.
@@ -31,8 +31,6 @@ in the domain
 1. Foundation -- uri, rdf, assertion level processing, including input/output
 to and from the VIVO triple store
 
-See vivo-course-lib for domain module for courses.
-
 #### Design Goals
 
 1. Minimize requirements for additional libraries.  Keep it simple.
@@ -41,10 +39,6 @@ See vivo-course-lib for domain module for courses.
 domain level (person, grant, pub, org, course, role)
 1. Increased emphasis on output functions for visualization and reporting
 1. Isolation of UF specific features and dependencies
-
-### Version 2.5
-
-Support for VIVO-ISF (maybe)
 
 ### Version 3.0
 
