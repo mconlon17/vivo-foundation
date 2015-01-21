@@ -551,13 +551,13 @@ class UnicodeDictReader(csv.DictReader):
         self.reader = UnicodeCsvReader(f, encoding=encoding, **kwds)
 
 
-def read_csv(filename, skip=True):
+def read_csv(filename, skip=True, delimiter="|"):
     """
     Given a filename, read the CSV file with that name.  We use "|" as a
     separator in CSV files to allow commas to appear in values.
 
     CSV files read by this function follow these conventions:
-    --  use "|" as a separator
+    --  use delimiter as a separator. Defaults to vertical bar.
     --  have a first row that contains column headings.  Columns headings
         must be known to VIVO, typically in the form prefix:name
     --  all elements must have values.  To specify a missing value, use
@@ -581,7 +581,7 @@ def read_csv(filename, skip=True):
     heading = []
     row_number = 0
     data = {}
-    for row in UnicodeCsvReader(open(filename, 'rU'), delimiter="|"):
+    for row in UnicodeCsvReader(open(filename, 'rU'), delimiter=delimiter):
         i = 0
         for r in row:
             # remove white space fore and aft

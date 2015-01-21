@@ -94,4 +94,6 @@ VIVO Tools Change log
     2.01    2014-08-30 MC
             Code formatting improvements.  Test functions through *_find_* updated for PEP 8
             and new vivo tools modules.  read_csv now opens using 'rU' rather than 'rb'.
-            Fixed typos in this file.
+            Fixed typos in this file
+    2.02    2015-01-21 MC
+            Add delimiter parameter to read_csv
