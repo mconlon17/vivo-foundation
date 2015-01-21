@@ -9,7 +9,7 @@
 __author__ = "Michael Conlon"
 __copyright__ = "Copyright 2014, University of Florida"
 __license__ = "BSD 3-Clause license"
-__version__ = "2.01"
+__version__ = "2.02"
 
 concept_dictionary = {}
 
