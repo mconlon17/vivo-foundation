@@ -9,7 +9,7 @@
 __author__ = "Michael Conlon"
 __copyright__ = "Copyright 2014, University of Florida"
 __license__ = "BSD 3-Clause license"
-__version__ = "2.02"
+__version__ = "2.03"
 
 concept_dictionary = {}
 
@@ -586,8 +586,6 @@ def read_csv(filename, skip=True, delimiter="|"):
         for r in row:
             # remove white space fore and aft
             row[i] = r.strip(string.whitespace)
-            if row[i] == 'NULL' or row[i] == 'None':
-                row[i] = ''
             i = i + 1
         if heading == []:
             heading = row  # the first row is the heading

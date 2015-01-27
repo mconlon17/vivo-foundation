@@ -97,3 +97,5 @@ VIVO Tools Change log
             Fixed typos in this file
     2.02    2015-01-21 MC
             Add delimiter parameter to read_csv
+    2.03    2015-01-27 MC
+            Allow NULL and None as text values in read_csv.  Previously they were converted to empty string
